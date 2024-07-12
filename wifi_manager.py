@@ -178,17 +178,16 @@ class WiFi_Manager:
 
         return no_error
 
-    def connect(self, bssid: str = None) -> bool:
+    def connect(self, bssid: str = None, password: str = None) -> bool:
         '''
             Connect to networks by BSSID. root is required
             Running `get_networks()` before is required
 
             bssid: str - network BSSID
+            password: str - password for network or will be requested in input()
 
             Return bool as logical result of task
         '''
-
-        password = None
 
         if not self.root:
             print('No rights for connect to Wi-Fi')
@@ -209,7 +208,9 @@ class WiFi_Manager:
         if not network['security']:
             assert input(f'{self._insecure} [n/Y]').lower() == 'y', "User canceled"
 
-        if any(map(lambda enc: enc in network['security'], self.enc_types)):
+        if any(
+            map(lambda enc: enc in network['security'], self.enc_types)
+        ) and not password:
             password = input(f'{self._protected}')
 
         no_error, output = self.__execute(
